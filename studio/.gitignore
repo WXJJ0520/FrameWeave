@@ -1,0 +1,4 @@
+# 仅提交源码与依赖锁；构建文件可由启动脚本重新生成。
+node_modules/
+dist/
+*.tsbuildinfo

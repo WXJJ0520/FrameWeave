@@ -1,0 +1,98 @@
+# Pixelle-Video Configuration
+# Copy this file to config.yaml and fill in your settings
+# ⚠️ Never commit config.yaml to Git!
+
+project_name: Pixelle-Video
+
+# ==================== LLM Configuration ====================
+# Supports any OpenAI SDK compatible API
+llm:
+  api_key: ""
+  base_url: ""
+  model: ""
+  # 在设置中加载并保存后自动生成；不要自行伪造绑定指纹。
+  model_catalog: {}
+
+# Popular presets:
+# Qwen Max:        base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"  model: "qwen-max"
+# OpenAI GPT-4o:   base_url: "https://api.openai.com/v1"                          model: "gpt-4o"
+# DeepSeek:        base_url: "https://api.deepseek.com"                           model: "deepseek-chat"
+# Ollama (Local):  base_url: "http://localhost:11434/v1"                          model: "llama3.2"
+
+# ==================== Direct API Provider Configuration ====================
+# 当前 Web 工作台仅使用直接模型 API；按使用的能力填写对应提供商。
+api_providers:
+  common:
+    print_model_input: false
+    local_proxy: ""
+  openai:
+    api_key: ""
+    base_url: "https://api.openai.com/v1"
+    use_proxy: false
+    # 图片生成与自定义素材视觉分析共用此提供商配置，不复用上方文案 LLM 凭据。
+    # 旧手填字段仅保留兼容；新下拉从当前连接加载并保存的 model_catalog 读取。
+    vision_models: []
+    model_catalog: {}
+  # Grok Imagine 视频生成：填写 xAI API 密钥，默认使用官方接口。
+  xai:
+    api_key: ""
+    base_url: "https://api.x.ai/v1"
+    use_proxy: false
+    model_catalog: {}
+  # 填写自己的 muse2api 服务地址与独立密钥，例如 https://your-muse-server/v1。
+  muse:
+    api_key: ""
+    base_url: ""
+    use_proxy: false
+    model_catalog: {}
+  dashscope:
+    api_key: ""
+    base_url: "https://dashscope.aliyuncs.com/api/v1"
+    use_proxy: false
+    # Wan 生成与素材分析共享已加载目录；vision_models 仅为历史字段。
+    vision_models: []
+    model_catalog: {}
+  ark:
+    api_key: ""
+    base_url: "https://ark.cn-beijing.volces.com/api/v3"
+    use_proxy: false
+    # 暂无已接入的目录查询，可在设置中明确选择手动维护。
+    model_catalog: {}
+  kling:
+    base_url: "https://api-beijing.klingai.com"
+    access_key: ""
+    secret_key: ""
+    use_proxy: false
+    model_catalog: {}
+
+# ==================== 媒体与配音偏好（兼容原配置结构） ====================
+# comfyui 仅为保留的历史字段名；当前 Web 页面不展示或调用工作流服务。
+# 不需要填写 RunningHub 或本地工作流凭据。
+comfyui:
+  tts:
+    inference_mode: local  # 内部名称 local 对应在线 Edge TTS，仍需要联网。
+    local:
+      voice: zh-CN-YunjianNeural
+      speed: 1.2
+  image:
+    default_workflow: api/openai/gpt-image-2
+    prompt_prefix: "Minimalist black-and-white matchstick figure style illustration, clean lines, simple sketch style"
+  video:
+    default_workflow: api/xai/grok-imagine-video
+    prompt_prefix: "Minimalist black-and-white matchstick figure style illustration, clean lines, simple sketch style"
+
+# ==================== Template Configuration ====================
+# Configure default template for video generation
+template:
+  # Default frame template to use when not explicitly specified
+  # Determines video aspect ratio and layout style
+  # Template naming convention:
+  #   - static_*.html: Static style templates (no AI-generated media)
+  #   - image_*.html: Templates requiring AI-generated images
+  #   - video_*.html: Templates requiring AI-generated videos
+  # Options: 
+  #   - 1080x1920 (vertical/portrait): image_default.html, image_modern.html, image_elegant.html, static_simple.html, etc.
+  #   - 1080x1080 (square): image_minimal_framed.html, etc.
+  #   - 1920x1080 (horizontal/landscape): image_film.html, image_full.html, etc.
+  # See templates/ directory for all available templates
+  default_template: "1080x1920/image_default.html"

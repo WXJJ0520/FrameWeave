@@ -1,0 +1,136 @@
+/* Pixelle Studio：稳定的 Streamlit test-id 与容器 key，不依赖随机类名。 */
+:root { --studio-bg:#0e1116; --studio-panel:#141920; --studio-line:#29313c; --studio-muted:#929eaf; --studio-accent:#7ce8cf; --studio-text:#e8edf4; }
+html, body, [data-testid="stApp"] { font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; }
+[data-testid="stApp"] { background:var(--studio-bg); color:#e8edf4; }
+[data-testid="stHeader"] { background:rgba(14,17,22,.94); height:2.5rem; min-height:2.5rem; }
+[data-testid="stAppDeployButton"] { display:none; }
+[data-testid="stToolbar"] { right:1rem; }
+[data-testid="stMainBlockContainer"] { max-width:1600px; padding:3rem 2.4rem 3rem; }
+[data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] { gap:1.2rem; }
+[data-testid="stSidebar"] { background:#10141a; border-right:1px solid #242b35; min-width:218px!important; max-width:218px!important; }
+[data-testid="stSidebarContent"] { padding-top:1rem; }
+[data-testid="stSidebarHeader"] { height:28px; min-height:28px; margin-bottom:0; }
+[data-testid="stSidebarNav"] { display:none; }
+[data-testid="stSidebarUserContent"] { padding:1.5rem 1rem; }
+.studio-brand { display:flex; align-items:center; gap:11px; font-size:25px; font-weight:700; letter-spacing:-1px; padding:0 7px 26px; }
+.brand-caption { display:block; font-size:8px; color:var(--studio-muted); letter-spacing:2px; margin-top:1px; }
+.studio-mark { display:grid; place-items:center; width:37px; height:40px; color:#10221d; background:var(--studio-accent); border-radius:10px; font-size:28px; font-weight:800; transform:rotate(-5deg); position:relative; }
+.studio-mark span { width:7px; height:7px; background:#10141a; border:2px solid #10141a; position:absolute; right:-3px; bottom:6px; border-radius:50%; }
+.sidebar-eyebrow { font-size:10px; letter-spacing:1.8px; color:#8491a4; padding:0 10px 10px; }
+[data-testid="stSidebar"] [data-testid="stPageLink"] a { border-radius:9px; padding:10px 12px; color:#a4afbe; transition:background .18s ease,color .18s ease; }
+[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover { background:#202831; color:#e8edf4; }
+[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] { background:#203b35; color:var(--studio-accent); }
+.sidebar-note { border-top:1px solid #252d38; margin:24px 8px 12px; padding-top:20px; font-size:9px; letter-spacing:1.1px; color:#b5c1cf; }
+.sidebar-note p { color:#778598; font-size:11px; line-height:1.8; letter-spacing:0; margin-top:10px; }
+.studio-status-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--studio-accent); margin-right:6px; }
+.st-key-studio-topbar { border-bottom:1px solid #252c36; padding-bottom:8px; }
+.studio-topbar-title { height:40px; display:flex; align-items:center; gap:10px; color:#d6dfeb; font-size:13px; font-weight:600; }
+.studio-topbar-title span { color:#748296; font-size:10px; letter-spacing:1.6px; padding-left:12px; border-left:1px solid #343d4a; }
+.studio-wordmark { font-size:inherit; font-weight:600; }
+.studio-wordmark em { font-style:normal; }
+.st-key-studio-topbar [data-testid="stHorizontalBlock"] { flex-wrap:nowrap!important; gap:12px; }
+.st-key-studio-topbar [data-testid="stColumn"] { min-width:0!important; width:auto!important; flex:1 1 auto!important; }
+.st-key-studio-topbar [data-testid="stColumn"]:has(.st-key-studio_settings_open) { flex:0 0 104px!important; }
+.st-key-studio-topbar [data-testid="stColumn"]:has(.st-key-studio_language) { flex:0 0 180px!important; }
+.st-key-studio_settings_open button { min-height:36px; background:#171e27; }
+/* 语言入口固定在右上角，两个选项同时可见；保留原生键盘与选中语义。 */
+.st-key-studio_language { min-width:164px; }
+.st-key-studio_language button { min-height:36px; font-size:12px; white-space:nowrap; }
+.st-key-studio_language button[aria-pressed="true"] { color:var(--studio-accent); background:#203b35; border-color:#52796e; }
+.studio-intro { padding:6px 0 2px; position:relative; animation:studio-enter .35s ease both; }
+.studio-eyebrow { font-size:9px; letter-spacing:2.5px; color:var(--studio-accent); font-weight:600; margin-bottom:8px; }
+.studio-intro h1 { font-size:clamp(25px,2.6vw,37px); line-height:1.3; font-weight:650; letter-spacing:-1.2px; padding:0; margin:0 0 10px; color:#f2f5f9; }
+.studio-intro p { font-size:12px; color:var(--studio-muted); margin:0; }
+.studio-steps { display:flex; gap:24px; margin-top:14px; color:#9daabd; font-size:10px; }
+.studio-steps span { display:flex; align-items:center; gap:7px; }
+.studio-steps b { font-size:9px; font-weight:500; letter-spacing:1px; color:var(--studio-accent); }
+/* 设置独立弹窗：控制高度并在内容区滚动，提供商标签不再堆成整页表单。 */
+[data-testid="stDialog"] [role="dialog"] { background:#141920; border:1px solid #35404e; border-radius:16px; max-height:90vh; overflow-y:auto; scrollbar-width:thin; }
+.st-key-studio-settings-panel { padding:0 2px 6px; }
+.st-key-studio-settings-panel hr { margin:.5rem 0; }
+.st-key-studio-settings-panel [data-testid="stVerticalBlock"] { gap:.8rem; }
+.st-key-studio-settings-panel [data-testid="stTabs"] > [data-baseweb="tab-list"] { gap:22px; }
+.st-key-studio-settings-panel [data-testid="stTabs"] [data-baseweb="tab"] { padding-top:10px; }
+.st-key-studio-settings-panel [data-testid="stVerticalBlockBorderWrapper"] { border-color:#2b3542; }
+.st-key-studio-settings-panel [data-testid="stWidgetLabel"] p { font-size:12px; }
+.st-key-save_config_btn button { background:var(--studio-accent); color:#0c2a22; border-color:var(--studio-accent); font-weight:600; }
+.st-key-studio_settings_close button { min-width:112px; }
+/* 主工作流与面板内标签采用不同层级，窄屏允许横向滚动。 */
+[data-testid="stTabs"] > [data-baseweb="tab-list"] { gap:22px; background:transparent; overflow-x:auto; scrollbar-width:thin; padding-bottom:0; }
+[data-testid="stTabs"] [data-baseweb="tab"] { color:#95a2b5; font-size:12px; padding:10px 0 13px; transition:color .18s ease; white-space:nowrap; }
+[data-testid="stTabs"] [data-baseweb="tab"] p { font-size:12px; }
+[data-testid="stTabs"] [aria-selected="true"] { color:var(--studio-accent)!important; }
+[data-baseweb="tab-highlight"] { background:var(--studio-accent); height:2px; }
+[data-baseweb="tab-border"] { background:#29313c; }
+.st-key-studio-workspace { padding-top:5px; }
+.st-key-studio-editor, .st-key-studio-preview { background:var(--studio-panel); border:1px solid #2b3340; border-radius:15px; padding:20px; animation:studio-enter .38s ease both; }
+.st-key-studio-preview { animation-delay:.06s; }
+.st-key-studio-preview h3 { font-size:18px; font-weight:600; padding:0 0 4px; }
+.st-key-studio-editor > [data-testid="stVerticalBlock"], .st-key-studio-preview > [data-testid="stVerticalBlock"] { gap:1rem; }
+.st-key-studio-editor [data-testid="stVerticalBlockBorderWrapper"] > div { border-color:#29323f!important; }
+.st-key-studio-editor [data-testid="stVerticalBlockBorderWrapper"] { border-radius:10px; }
+.st-key-studio-editor [data-testid="stTabs"] > [data-baseweb="tab-list"] { gap:20px; }
+.st-key-studio-editor [data-testid="stMarkdownContainer"] > p > strong { font-size:13px; font-weight:600; }
+/* 输入、弹出菜单及焦点统一；不更改控件语义与可点击区域。 */
+[data-testid="stWidgetLabel"] p { font-size:11px; font-weight:500; color:#b9c5d5; }
+[data-testid="stCaptionContainer"] p { color:#8997aa; font-size:11px; line-height:1.6; }
+[data-baseweb="input"], [data-baseweb="base-input"], [data-baseweb="textarea"], [data-baseweb="select"] > div { background:#1b222c; border-radius:8px; }
+[data-baseweb="input"]:focus-within, [data-baseweb="textarea"]:focus-within, [data-baseweb="select"]:focus-within > div { border-color:var(--studio-accent)!important; box-shadow:0 0 0 2px #7ce8cf13; }
+input, textarea { font-size:13px!important; line-height:1.7!important; caret-color:var(--studio-accent); }
+input::placeholder, textarea::placeholder { color:#6f7e92!important; opacity:1; }
+.st-key-studio-editor textarea { min-height:148px; }
+[data-testid="stButton"] button, [data-testid="stDownloadButton"] button, [data-testid="stLinkButton"] a { border:1px solid #35404e; border-radius:8px; font-size:12px; min-height:39px; transition:background .18s ease,transform .18s ease,border-color .18s ease; }
+[data-testid="stButton"] button:hover, [data-testid="stDownloadButton"] button:hover { border-color:#7ce8cf90; background:#21372f; transform:translateY(-1px); color:#dcfff6; }
+[data-testid="stButton"] button:focus-visible, [data-baseweb="tab"]:focus-visible { outline:2px solid var(--studio-accent); outline-offset:3px; }
+[data-testid="stButton"] button[kind="primary"], .st-key-studio_generate button { background:var(--studio-accent); color:#0c2a22; border-color:var(--studio-accent); font-weight:650; min-height:45px; box-shadow:0 4px 20px #7ce8cf0d; }
+[data-testid="stButton"] button[kind="primary"]:hover, .st-key-studio_generate button:hover { background:#a0f4e1; color:#0c2a22; }
+[data-testid="stExpander"] { border-color:#303948; border-radius:9px; }
+[data-testid="stExpander"] summary:hover { color:var(--studio-accent); }
+[data-testid="stExpander"] summary p, [data-testid="stRadio"] p, [data-testid="stCheckbox"] p { font-size:12px; }
+[data-testid="stAlert"] { border-radius:9px; }
+[data-testid="stAlert"] p { font-size:12px; }
+/* 空预览是说明性的监看器，不伪装为可播放的视频或已生成时间线。 */
+.studio-monitor { border:1px solid #303a48; border-radius:11px; background:#0c1016; overflow:hidden; }
+.monitor-topbar, .monitor-footer { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:11px 14px; font-size:9px; color:#8797ab; letter-spacing:.8px; }
+.monitor-topbar { border-bottom:1px solid #252e3b; }
+.monitor-canvas { min-height:210px; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; position:relative; background:radial-gradient(ellipse at 50% 50%,#1d3031 0%,#101720 55%,#0c1118 100%); }
+.monitor-empty { text-align:center; color:#b4c5d5; padding:28px; width:100%; }
+.monitor-empty svg { width:84px; height:84px; margin-bottom:15px; color:var(--studio-accent); }
+.monitor-empty h3, .monitor-empty strong { font-size:15px; letter-spacing:.2px; font-weight:500; display:block; margin:0 0 9px; padding:0; }
+.monitor-empty p { font-size:11px; color:#7f93a9; margin:0; line-height:1.8; }
+.monitor-footer { border-top:1px solid #252e3b; font-variant-numeric:tabular-nums; }
+.studio-overview { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border:1px solid #2c3542; border-radius:9px; overflow:hidden; margin:0 0 4px; }
+.studio-overview-item { min-width:0; padding:13px 11px; border-right:1px solid #2c3542; }
+.studio-overview-item:last-child { border-right:0; }
+.studio-overview-item:nth-child(2) { border-right:0; }
+.studio-overview-item:nth-child(-n+2) { border-bottom:1px solid #2c3542; }
+.studio-overview-item span, .studio-overview-item small { display:block; color:#8290a3; font-size:10px; margin-bottom:6px; }
+.studio-overview-item strong { display:block; color:#ccd8e6; font-size:12px; font-weight:500; overflow-wrap:anywhere; }
+@keyframes studio-enter { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+/* 根据预览容器定位列，兼容 Streamlit 在列外插入的布局包装层。 */
+@media(min-width:1100px) { .st-key-studio-workspace [data-testid="stColumn"]:has(.st-key-studio-preview) { position:sticky; top:3.5rem; align-self:flex-start; } }
+@media(max-width:1000px) {
+  .st-key-studio-workspace [data-testid="stHorizontalBlock"]:has(.st-key-studio-editor):has(.st-key-studio-preview) { flex-direction:column; }
+  .st-key-studio-workspace [data-testid="stColumn"]:has(.st-key-studio-editor), .st-key-studio-workspace [data-testid="stColumn"]:has(.st-key-studio-preview) { width:100%!important; flex:1 1 100%!important; }
+}
+@media(max-width:1100px) { [data-testid="stMainBlockContainer"] { padding-left:1.5rem; padding-right:1.5rem; } .st-key-studio-editor,.st-key-studio-preview { padding:15px; } }
+@media(max-width:760px) {
+  [data-testid="stMainBlockContainer"] { padding:3rem 1rem 2rem; }
+  .studio-intro h1 { font-size:27px; } .studio-steps { gap:16px; margin-top:18px; }
+  .studio-topbar-title span { display:none; }
+  .st-key-studio-topbar [data-testid="stHorizontalBlock"] { flex-wrap:nowrap!important; }
+  .st-key-studio-topbar [data-testid="stColumn"] { min-width:0!important; width:auto!important; flex:1 1 auto!important; }
+  .st-key-studio-topbar [data-testid="stColumn"]:last-child { flex:0 0 164px!important; }
+  [data-testid="stTabs"] > [data-baseweb="tab-list"] { gap:19px; }
+  .monitor-canvas { min-height:210px; } .studio-overview-item { padding:10px 8px; }
+}
+@media(max-width:480px) {
+  .studio-wordmark em { display:none; }
+  .st-key-studio-topbar [data-testid="stHorizontalBlock"] { gap:8px; }
+  .st-key-studio-topbar [data-testid="stColumn"]:has(.st-key-studio_settings_open) { flex-basis:88px!important; }
+  .st-key-studio-topbar [data-testid="stColumn"]:has(.st-key-studio_language) { flex-basis:146px!important; }
+  .st-key-studio_language { min-width:146px; }
+  .st-key-studio-settings-panel [data-testid="stTabs"] > [data-baseweb="tab-list"] { gap:16px; }
+}
+/* 尊重系统减少动态效果偏好，确保动效不阻碍阅读与操作。 */
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }

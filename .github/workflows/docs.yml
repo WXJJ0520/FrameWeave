@@ -1,0 +1,65 @@
+name: Documentation build checks
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - 'LICENSE'
+      - 'NOTICE'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - 'LICENSE'
+      - 'NOTICE'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+# 发布源码只验证文档；不写入分支，也不自动部署 GitHub Pages。
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git-revision-date-localized plugin
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-docs.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-docs.txt
+
+      - name: Build documentation
+        run: mkdocs build --clean
+
+      # 构建产物供检查下载；上传工作流附件不会发布网站。
+      - name: Upload built documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: frameweave-documentation
+          path: site/
+          if-no-files-found: error
+          retention-days: 7
+

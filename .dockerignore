@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+docs/*
+!docs/images/
+!docs/FAQ*.md
+*.md
+!README.md
+
+# Plans and development files
+plans/
+repositories/
+examples/
+
+# Test files
+test_*.py
+tests/
+*.log
+
+# Output and temporary files
+output/*
+!output/.gitkeep
+temp/
+*.tmp
+
+# User data (will be mounted)
+data/users/*
+!data/.gitkeep
+
+# Config (will be mounted)
+config.yaml
+config.yaml.bak
+config.example.yaml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Misc
+*.bak
+restart_web.sh
+start_web.sh
+

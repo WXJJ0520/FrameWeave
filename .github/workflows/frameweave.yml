@@ -1,0 +1,60 @@
+name: FrameWeave offline checks
+
+on:
+  push:
+    paths:
+      - 'frameweave/**'
+      - 'studio/**'
+      - 'tests/frameweave*test.py'
+      - '.github/workflows/frameweave.yml'
+  pull_request:
+    paths:
+      - 'frameweave/**'
+      - 'studio/**'
+      - 'tests/frameweave*test.py'
+      - '.github/workflows/frameweave.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      # 离线合成验收需要真实 FFmpeg 与中文字体，不使用模型密钥。
+      - name: Install local rendering tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-cjk
+      - name: Install minimal test dependencies
+        run: python -m pip install "fastapi>=0.115" "uvicorn>=0.32" "pydantic>=2" "pillow>=10,<12" "httpx>=0.28" "pytest>=8" "pytest-asyncio>=0.23" "ruff>=0.6"
+      - name: Lint FrameWeave
+        run: python -m ruff check frameweave tests/frameweave*test.py
+      # 显式选择新增测试文件，避免收集上游测试时加载真实供应商配置。
+      - name: Test FrameWeave without provider credentials
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pytest
+          files = sorted(str(path) for path in Path('tests').glob('frameweave*test.py'))
+          assert files, 'FrameWeave tests not found'
+          raise SystemExit(pytest.main(files))
+          PY
+      - name: Build frontend
+        run: |
+          npm --prefix studio ci
+          npm --prefix studio run build

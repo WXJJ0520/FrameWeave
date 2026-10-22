@@ -1,0 +1,13 @@
+# 文本由 Git 规范化，避免 Windows 开发环境把 CRLF 带入 Linux 启动脚本。
+* text=auto
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# 图片和媒体按二进制保存，禁止换行转换。
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.mp3 binary
+*.wav binary
+*.mp4 binary

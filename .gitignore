@@ -1,0 +1,114 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursorrules
+.cursorignore
+.kiro/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config files with sensitive data
+config.yaml
+config.yaml.bak
+*.yaml.bak
+.env
+
+# Logs
+*.log
+
+# Test outputs
+test_outputs/
+*.mp3
+*.wav
+*.bak
+# FrameWeave：测试源码需要提交，不再全局忽略 test_*.py。
+
+!bgm/default.mp3
+
+# Temp files
+temp/
+tmp/
+.cache/
+
+# MkDocs build output
+site/
+
+data
+output
+
+plans/
+examples/*
+!examples/frameweave/
+!examples/frameweave/**
+repositories/
+
+*.out
+
+# FrameWeave：前端依赖与构建缓存、项目数据库和个人配置不进入仓库。
+node_modules/
+*.tsbuildinfo
+.pytest_cache/
+.ruff_cache/
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# 发布保护：排除服务凭据、数据库边车与私钥；公开示例仍可提交。
+.streamlit/secrets.toml
+secrets.*
+!secrets.example.*
+!secrets.*.example
+*.db
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+*.pem
+*.key
+*.p12
+*.pfx
+*.pkcs12
+*.jks
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# 本机配置验收截图含私人服务地址，不作为公开产品截图发布。
+docs/assets/dynamic-model-catalog.jpg

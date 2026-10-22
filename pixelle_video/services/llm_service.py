@@ -1,0 +1,387 @@
+# Copyright (C) 2025 AIDC-AI
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+LLM (Large Language Model) Service - Direct OpenAI SDK implementation
+
+Supports structured output via response_type parameter (Pydantic model).
+"""
+
+import json
+import re
+from typing import Optional, Type, TypeVar, Union
+
+from loguru import logger
+from openai import AsyncOpenAI
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def _completion_parameters(model: str, temperature: float, max_tokens: int, extra: dict) -> dict:
+    """仅对已核实的 GPT-6 型号调整协议，兼容服务的其它模型保留原参数。"""
+    params = {"temperature": temperature, "max_tokens": max_tokens, **extra}
+    # 接受常见的 openai/ 前缀和日期快照，不把名称近似的第三方模型视为 GPT-6。
+    model_name = model.removeprefix("openai/")
+    matched = re.fullmatch(r"(gpt-6\.1-sol|gpt-6-astra|gpt-6-sol|gpt-6-luna)(?:-\d{4}-\d{2}-\d{2})?", model_name)
+    if not matched:
+        return params
+    family = matched.group(1)
+    effort = params.get("reasoning_effort") or "low"
+    allowed = {"low", "medium", "high", "xhigh", "max"}
+    if family in {"gpt-6-sol", "gpt-6-luna"}:
+        allowed.add("none")
+    if effort not in allowed:
+        raise ValueError("该 GPT-6 型号不支持当前推理强度，请使用 low、medium、high、xhigh 或 max。")
+    # 当前文案流程只需要文本输出。工具调用不能悄悄丢弃或交给不兼容的端点。
+    if (params.get("tools") or params.get("functions")) and (
+        family in {"gpt-6.1-sol", "gpt-6-astra"} or effort != "none"
+    ):
+        raise ValueError("该模型的工具调用需使用 Responses 接口；当前文案接口只支持文本生成。")
+    params["reasoning_effort"] = effort
+    params.setdefault("max_completion_tokens", params.pop("max_tokens"))
+    if effort != "none":
+        for key in ("temperature", "top_p", "logprobs", "top_logprobs"):
+            params.pop(key, None)
+    return params
+
+
+def _check_completion(response) -> None:
+    """拒绝截断结果，避免把推理耗尽预算后的残缺文案误当成完整脚本。"""
+    if not response.choices:
+        raise ValueError("文本模型没有返回内容，请检查所选型号和接口协议。")
+    if getattr(response.choices[0], "finish_reason", None) == "length":
+        raise ValueError("文本模型输出达到长度上限，脚本可能不完整；请缩短单次请求或调整输出预算。")
+
+
+class LLMService:
+    """
+    LLM (Large Language Model) service
+    
+    Direct implementation using OpenAI SDK. No capability layer needed.
+    
+    Supports all OpenAI SDK compatible providers:
+    - OpenAI（包括 gpt-6.1-sol，旧型号继续兼容）
+    - Alibaba Qwen (qwen-max, qwen-plus, qwen-turbo)
+    - Anthropic Claude (claude-sonnet-4-5, claude-opus-4, claude-haiku-4)
+    - DeepSeek (deepseek-chat)
+    - Moonshot Kimi (moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k)
+    - Ollama (llama3.2, qwen2.5, mistral, codellama) - FREE & LOCAL!
+    - Any custom provider with OpenAI-compatible API
+    
+    Usage:
+        # Direct call
+        answer = await pixelle_video.llm("Explain atomic habits")
+        
+        # With parameters
+        answer = await pixelle_video.llm(
+            prompt="Explain atomic habits in 3 sentences",
+            temperature=0.7,
+            max_tokens=2000
+        )
+    """
+    
+    def __init__(self, config: dict):
+        """
+        Initialize LLM service
+        
+        Args:
+            config: Full application config dict (kept for backward compatibility)
+        """
+        # Note: We no longer cache config here to support hot reload
+        # Config is read dynamically from config_manager in _get_config_value()
+        self._client: Optional[AsyncOpenAI] = None
+    
+    def _get_config_value(self, key: str, default=None):
+        """
+        Get config value dynamically from config_manager (supports hot reload)
+        
+        Args:
+            key: Config key name
+            default: Default value if not found
+        
+        Returns:
+            Config value
+        """
+        from pixelle_video.config import config_manager
+        return getattr(config_manager.config.llm, key, default)
+    
+    def _create_client(
+        self,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+    ) -> AsyncOpenAI:
+        """
+        Create OpenAI client
+        
+        Args:
+            api_key: API key (optional, uses config if not provided)
+            base_url: Base URL (optional, uses config if not provided)
+        
+        Returns:
+            AsyncOpenAI client instance
+        """
+        # Get API key (priority: parameter > config)
+        final_api_key = (
+            api_key
+            or self._get_config_value("api_key")
+            or "dummy-key"  # Ollama doesn't need real key
+        )
+        
+        # Get base URL (priority: parameter > config)
+        final_base_url = (
+            base_url
+            or self._get_config_value("base_url")
+        )
+        
+        # Create client
+        client_kwargs = {"api_key": final_api_key}
+        if final_base_url:
+            client_kwargs["base_url"] = final_base_url
+        
+        return AsyncOpenAI(**client_kwargs)
+    
+    async def __call__(
+        self,
+        prompt: str,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 2000,
+        response_type: Optional[Type[T]] = None,
+        **kwargs
+    ) -> Union[str, T]:
+        """
+        Generate text using LLM
+        
+        Args:
+            prompt: The prompt to generate from
+            api_key: API key (optional, uses config if not provided)
+            base_url: Base URL (optional, uses config if not provided)
+            model: Model name (optional, uses config if not provided)
+            temperature: Sampling temperature (0.0-2.0). Lower is more deterministic.
+            max_tokens: Maximum tokens to generate
+            response_type: Optional Pydantic model class for structured output.
+                          If provided, returns parsed model instance instead of string.
+            **kwargs: Additional provider-specific parameters
+        
+        Returns:
+            Generated text (str) or parsed Pydantic model instance (if response_type provided)
+        
+        Examples:
+            # Basic text generation
+            answer = await pixelle_video.llm("Explain atomic habits")
+            
+            # Structured output with Pydantic model
+            class MovieReview(BaseModel):
+                title: str
+                rating: int
+                summary: str
+            
+            review = await pixelle_video.llm(
+                prompt="Review the movie Inception",
+                response_type=MovieReview
+            )
+            print(review.title)  # Structured access
+        """
+        # Create client (new instance each time to support parameter overrides)
+        client = self._create_client(api_key=api_key, base_url=base_url)
+        
+        # Get model (priority: parameter > config)
+        final_model = (
+            model
+            or self._get_config_value("model")
+            or ""
+        )
+
+        # 没有明确选择时不能偷偷调用旧型号；设置页负责提供候选与自定义入口。
+        if not final_model.strip():
+            raise ValueError("请先在系统配置中选择文本模型。")
+        
+        logger.debug(f"LLM call: model={final_model}, base_url={client.base_url}, response_type={response_type}")
+        
+        try:
+            if response_type is not None:
+                # Structured output mode - try beta.chat.completions.parse first
+                return await self._call_with_structured_output(
+                    client=client,
+                    model=final_model,
+                    prompt=prompt,
+                    response_type=response_type,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    **kwargs
+                )
+            else:
+                # Standard text output mode
+                response = await client.chat.completions.create(
+                    model=final_model,
+                    messages=[{"role": "user", "content": prompt}],
+                    **_completion_parameters(final_model, temperature, max_tokens, kwargs)
+                )
+
+                _check_completion(response)
+                
+                raw_content = response.choices[0].message.content
+                result = raw_content if isinstance(raw_content, str) else ""
+                logger.debug(f"LLM response length: {len(result)} chars")
+                if not result or not result.strip():
+                    logger.warning(
+                        f"LLM returned empty text content (model={final_model}, base_url={client.base_url})"
+                    )
+                
+                return result
+        
+        except Exception as e:
+            logger.error(f"LLM call error (model={final_model}, base_url={client.base_url}): {e}")
+            raise
+    
+    async def _call_with_structured_output(
+        self,
+        client: AsyncOpenAI,
+        model: str,
+        prompt: str,
+        response_type: Type[T],
+        temperature: float,
+        max_tokens: int,
+        **kwargs
+    ) -> T:
+        """
+        Call LLM with structured output support
+        
+        Uses JSON schema instruction appended to prompt for maximum compatibility
+        across all OpenAI-compatible providers (Qwen, DeepSeek, etc.).
+        
+        Args:
+            client: OpenAI client
+            model: Model name
+            prompt: The prompt
+            response_type: Pydantic model class
+            temperature: Sampling temperature
+            max_tokens: Max tokens
+            **kwargs: Additional parameters
+        
+        Returns:
+            Parsed Pydantic model instance
+        """
+        # Build JSON schema instruction and append to prompt
+        json_schema_instruction = self._get_json_schema_instruction(response_type)
+        enhanced_prompt = f"{prompt}\n\n{json_schema_instruction}"
+        
+        # Call LLM with enhanced prompt
+        response = await client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": enhanced_prompt}],
+            **_completion_parameters(model, temperature, max_tokens, kwargs)
+        )
+        _check_completion(response)
+        raw_content = response.choices[0].message.content
+        content = raw_content if isinstance(raw_content, str) else ""
+        
+        logger.debug(f"Structured output response length: {len(content)} chars")
+        if not content or not content.strip():
+            logger.warning(
+                f"LLM returned empty structured-output content (model={model}, base_url={client.base_url})"
+            )
+        
+        # Parse JSON from response content
+        return self._parse_response_as_model(content, response_type)
+    
+    def _get_json_schema_instruction(self, response_type: Type[T]) -> str:
+        """
+        Generate JSON schema instruction for LLM fallback mode
+        
+        Args:
+            response_type: Pydantic model class
+        
+        Returns:
+            Formatted instruction string with JSON schema
+        """
+        try:
+            # Get JSON schema from Pydantic model
+            schema = response_type.model_json_schema()
+            schema_str = json.dumps(schema, indent=2, ensure_ascii=False)
+            
+            return f"""## IMPORTANT: JSON Output Format Required
+You MUST respond with ONLY a valid JSON object (no markdown, no extra text).
+The JSON must strictly follow this schema:
+
+```json
+{schema_str}
+```
+
+Output ONLY the JSON object, nothing else."""
+        except Exception as e:
+            logger.warning(f"Failed to generate JSON schema: {e}")
+            return """## IMPORTANT: JSON Output Format Required
+You MUST respond with ONLY a valid JSON object (no markdown, no extra text)."""
+    
+    def _parse_response_as_model(self, content: str, response_type: Type[T]) -> T:
+        """
+        Parse LLM response content as Pydantic model
+        
+        Args:
+            content: Raw LLM response text
+            response_type: Target Pydantic model class
+        
+        Returns:
+            Parsed model instance
+        """
+        # Try direct JSON parsing first
+        try:
+            data = json.loads(content)
+            return response_type.model_validate(data)
+        except json.JSONDecodeError:
+            pass
+        
+        # Try extracting from markdown code block
+        json_pattern = r'```(?:json)?\s*([\s\S]+?)\s*```'
+        match = re.search(json_pattern, content, re.DOTALL)
+        if match:
+            try:
+                data = json.loads(match.group(1))
+                return response_type.model_validate(data)
+            except json.JSONDecodeError:
+                pass
+        
+        # Try to find any JSON object in the text
+        brace_start = content.find('{')
+        brace_end = content.rfind('}')
+        if brace_start != -1 and brace_end > brace_start:
+            try:
+                json_str = content[brace_start:brace_end + 1]
+                data = json.loads(json_str)
+                return response_type.model_validate(data)
+            except json.JSONDecodeError:
+                pass
+        
+        raise ValueError(f"Failed to parse LLM response as {response_type.__name__}: {content[:200]}...")
+    
+    @property
+    def active(self) -> str:
+        """
+        Get active model name
+        
+        Returns:
+            Active model name
+        
+        Example:
+            print(f"Using model: {pixelle_video.llm.active}")
+        """
+        return self._get_config_value("model", "")
+    
+    def __repr__(self) -> str:
+        """String representation"""
+        model = self.active
+        base_url = self._get_config_value("base_url", "default")
+        return f"<LLMService model={model!r} base_url={base_url!r}>"

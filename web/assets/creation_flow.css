@@ -1,0 +1,112 @@
+/* 统一创作步骤；规则只作用于步骤组件，保持系统配置和作品记录原有布局。 */
+.creation-flow-header {
+  padding: 8px 0 16px;
+}
+.creation-flow-header ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.creation-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 12px;
+  border-bottom: 2px solid var(--studio-line, #ededed);
+  color: var(--studio-muted, #8a8a8a);
+  font-size: 13px;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.creation-step-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 29px;
+  height: 29px;
+  border: 1px solid var(--studio-line, #e7e7e7);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.creation-step.current {
+  border-color: var(--studio-text, #242424);
+  color: var(--studio-text, #171717);
+  font-weight: 600;
+}
+.creation-step.current .creation-step-number {
+  background: var(--studio-text, #242424);
+  color: var(--studio-bg, #fff);
+  border-color: var(--studio-text, #242424);
+}
+.creation-step.visited {
+  color: var(--studio-muted, #595959);
+  border-color: var(--studio-muted, #bcbcbc);
+}
+.creation-step-label {
+  line-height: 1.5;
+}
+/* 各业务继续使用原字段组件；外层统一卡片，内层不重复绘制卡片边框。 */
+[class*="st-key-creation-flow-"][class*="-panel-"] {
+  padding: 24px;
+  border: 1px solid var(--studio-line, #e7e7e7);
+  border-radius: 12px;
+  background: var(--studio-panel, #fff);
+  min-width: 0;
+}
+.creation-panel-heading {
+  padding-bottom: 14px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--studio-line, #f0f0f0);
+}
+.creation-panel-heading h2 {
+  margin: 0 0 6px;
+  color: var(--studio-text, #171717);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+}
+.creation-panel-heading p {
+  margin: 0;
+  color: var(--studio-muted, #737373);
+  font-size: 12px;
+  line-height: 1.7;
+}
+[class*="st-key-creation-flow-"][class*="-panel-"] [data-testid="stVerticalBlockBorderWrapper"] {
+  border: 0 !important;
+  padding: 0 !important;
+}
+[class*="st-key-creation-flow-"][class$="-navigation"] {
+  padding: 16px 0 4px;
+  border-top: 1px solid var(--studio-line, #ededed);
+}
+/* 导航始终保持一行，覆盖旧主题在窄屏上将所有 st.columns 拆行的规则。 */
+[class*="st-key-creation-flow-"][class$="-navigation"] [data-testid="stHorizontalBlock"] {
+  flex-wrap: nowrap !important;
+  align-items: center;
+}
+[class*="st-key-creation-flow-"][class$="-navigation"] [data-testid="stColumn"] {
+  min-width: 0 !important;
+  flex: 1 1 0 !important;
+  width: auto !important;
+}
+.creation-flow-progress {
+  text-align: center;
+  color: var(--studio-muted, #8a8a8a);
+  font-size: 12px;
+  line-height: 40px;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .creation-flow-header ol { gap: 6px; }
+  .creation-step { gap: 6px; padding: 10px 2px; font-size: 12px; }
+  .creation-step-number { flex-basis: 24px; height: 24px; font-size: 10px; }
+  [class*="st-key-creation-flow-"][class*="-panel-"] { padding: 16px; }
+  .creation-flow-progress { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .creation-step { transition: none; }
+}

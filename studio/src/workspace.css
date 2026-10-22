@@ -1,0 +1,174 @@
+/* 导航与页面层级：低对比底色只用于交互状态，主画布始终纯白。 */
+.workspace-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.workspace-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  min-height: 43px;
+  text-align: left;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 13px;
+  color: #616161;
+}
+.workspace-nav-item:hover {
+  background: #f7f7f7;
+  color: #252525;
+}
+.workspace-nav-item.active {
+  background: var(--accent-soft);
+  color: #493370;
+  font-weight: 600;
+}
+.management-start {
+  margin-top: 28px;
+}
+.nav-glyph {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  color: #868686;
+}
+.workspace-nav-item.active .nav-glyph {
+  color: #7255b2;
+}
+.embedded-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 22px;
+  margin-bottom: 30px;
+}
+.embedded-heading h1 {
+  font-size: clamp(28px, 2.6vw, 36px);
+  letter-spacing: -0.9px;
+  font-weight: 650;
+  color: #1a1a1a;
+  margin: 10px 0 10px;
+  line-height: 1.25;
+}
+.embedded-heading p {
+  font-size: 14px;
+  color: #777;
+  line-height: 1.75;
+}
+.embedded-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 4px;
+}
+.text-link {
+  font-size: 11px;
+  color: #838383;
+  white-space: nowrap;
+}
+.text-link:hover {
+  color: #202020;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.tool-connection {
+  font-size: 11px;
+  color: #8d8267;
+  white-space: nowrap;
+}
+.tool-connection.ready {
+  color: #898989;
+}
+.tool-connection::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  display: inline-block;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 7px;
+}
+.creative-tool-frame {
+  display: block;
+  width: 100%;
+  height: calc(100dvh - 230px);
+  min-height: 720px;
+  border: 0;
+  background: #fff;
+}
+.embedded-workspace .message {
+  margin-bottom: 18px;
+}
+.embedded-workspace:not([hidden]) {
+  animation: page-enter 0.22s ease-out both;
+}
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 1100px) {
+  .workspace-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 22px;
+  }
+  .workspace-nav-item {
+    width: auto;
+    flex: 0 0 auto;
+    font-size: 12px;
+    padding: 8px 11px;
+    gap: 8px;
+  }
+  .nav-glyph svg {
+    width: 17px;
+    height: 17px;
+  }
+  .management-start {
+    margin-top: 0;
+  }
+  .embedded-heading {
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 24px;
+  }
+  .embedded-heading h1 {
+    font-size: 31px;
+  }
+  .embedded-actions {
+    gap: 15px;
+    padding-bottom: 5px;
+  }
+  .creative-tool-frame {
+    min-height: 760px;
+  }
+}
+@media (max-width: 640px) {
+  .embedded-heading {
+    display: block;
+  }
+  .embedded-actions {
+    justify-content: space-between;
+    margin-top: 17px;
+  }
+  .embedded-heading h1 {
+    font-size: 29px;
+  }
+  .embedded-heading p {
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .embedded-workspace:not([hidden]) {
+    animation: none;
+  }
+}

@@ -1,0 +1,8 @@
+# 原生控件与自定义工作台使用同一暗色主题，弹出菜单也保持一致。
+[theme]
+base = "dark"
+primaryColor = "#7CE8CF"
+backgroundColor = "#0E1116"
+secondaryBackgroundColor = "#191E27"
+textColor = "#E8EDF4"
+font = "sans serif"

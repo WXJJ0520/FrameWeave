@@ -1,0 +1,84 @@
+# Windows Package Build Configuration
+
+# Package information
+package:
+  name: Pixelle-Video
+  version_source: pyproject.toml  # Read version from pyproject.toml
+  architecture: win64
+  
+# Python configuration
+python:
+  version: "3.11.9"
+  download_url: "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip"
+  # Mirror for China users (optional)
+  mirror_url: "https://mirrors.huaweicloud.com/python/3.11.9/python-3.11.9-embed-amd64.zip"
+
+# FFmpeg configuration
+ffmpeg:
+  version: "6.1.1"
+  download_url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+  # Alternative mirror
+  mirror_url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+
+# Playwright configuration (for HTML template rendering)
+playwright:
+  install_browsers: true  # Run 'playwright install chromium' during build
+  note: "Playwright manages its own Chromium binary, no system Chrome needed"
+
+# Build options
+build:
+  # Files/folders to exclude from project copy
+  exclude_patterns:
+    - ".git"
+    - ".github"
+    - "__pycache__"
+    - "*.pyc"
+    - ".pytest_cache"
+    - ".ruff_cache"
+    - "*.log"
+    - ".DS_Store"
+    - "output/*"  # Don't include output files
+    - "temp/*"
+    - "plans/*"  # Don't include planning docs
+    - "repositories/*"  # Don't include referenced repos
+    - "docs/en/*"  # Don't include English docs
+    - "docs/zh/*"  # Don't include Chinese docs
+    - "docs/gallery/*"  # Don't include gallery docs
+    - "docs/stylesheets/*"  # Don't include doc stylesheets
+    # Note: FAQ.md and FAQ_CN.md are included for in-app FAQ feature
+    - "test_*.py"  # Don't include test files
+    - ".venv"
+    - "venv"
+    - "node_modules"
+    - "uv.lock"
+    - "config.yaml"  # User configuration file (sensitive)
+    - "config.yaml.bak"  # Configuration backup
+    - "*.yaml.bak"  # All YAML backups
+    - ".env"  # Environment variables
+  
+  # Dependencies installation
+  use_uv: true  # Use uv for faster dependency installation
+  pre_install_deps: true  # Install deps during build (recommended for end users)
+  
+  # Output
+  output_dir: "dist/windows"
+  create_zip: true
+  zip_compression: "deflate"  # deflate, bzip2, lzma
+  
+  # Additional options
+  include_readme: true
+  include_license: true
+  create_empty_dirs:
+    - "data"
+    - "output"
+
+# Download cache
+cache:
+  enabled: true
+  cache_dir: "packaging/windows/.cache"
+  
+# Mirror settings (for China users)
+mirrors:
+  use_cn_mirror: false  # Set to true for faster downloads in China
+  pypi_mirror: "https://pypi.tuna.tsinghua.edu.cn/simple"
+

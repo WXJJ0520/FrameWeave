@@ -1,0 +1,526 @@
+/* 仅工作台嵌入入口加载：统一纯白表单，不覆盖 8501 独立页面主题。 */
+:root {
+  --studio-bg: #fff;
+  --studio-panel: #fff;
+  --studio-line: #e7e7e7;
+  --studio-muted: #737373;
+  --studio-accent: #171717;
+  --studio-text: #171717;
+  color-scheme: light;
+}
+
+html,
+body,
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+  background: #fff;
+  color: #171717;
+  scrollbar-color: #d4d4d4 #fff;
+}
+
+[data-testid="stHeader"],
+[data-testid="stSidebar"],
+[data-testid="stSidebarCollapsedControl"] {
+  display: none !important;
+}
+
+/* 外层已负责页面留白，内嵌层只留少量呼吸空间，避免双层边距挤压表单。 */
+[data-testid="stMainBlockContainer"] {
+  max-width: none;
+  padding: 1rem 0.2rem 2rem;
+}
+
+[data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {
+  gap: 1.25rem;
+}
+
+[data-testid="stMarkdownContainer"],
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] p,
+[data-testid="stText"],
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"],
+[data-testid="stMarkdownContainer"] :is(h1, h2, h3, h4, h5) {
+  color: #171717;
+}
+
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stWidgetLabel"] p,
+[data-testid="stExpander"] summary p,
+[data-testid="stRadio"] p,
+[data-testid="stCheckbox"] p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+[data-testid="stWidgetLabel"] p {
+  font-weight: 500;
+}
+
+[data-testid="stMarkdownContainer"] :is(h2, h3, h4) {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] *,
+.studio-overview-item span,
+.studio-overview-item small {
+  color: #737373 !important;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+[data-testid="stMarkdownContainer"] a {
+  color: #5b45a6;
+  text-underline-offset: 3px;
+}
+
+[data-testid="stMarkdownContainer"] hr {
+  border-color: #e7e7e7;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlockBorderWrapper"] > div,
+.st-key-studio-editor [data-testid="stVerticalBlockBorderWrapper"] > div,
+.st-key-studio-editor,
+.st-key-studio-preview {
+  background: #fff;
+  border-color: #e7e7e7 !important;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.st-key-studio-editor,
+.st-key-studio-preview {
+  padding: 20px;
+  animation: none;
+}
+
+/* 输入与弹出菜单同时覆写，防止暗色主题遗留的白字落在白底上。 */
+[data-baseweb="input"],
+[data-baseweb="base-input"],
+[data-baseweb="textarea"],
+[data-baseweb="select"] > div,
+[data-testid="stNumberInput"] > div {
+  background: #fff !important;
+  color: #171717 !important;
+  border-color: #dedede !important;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+[data-baseweb="input"]:focus-within,
+[data-baseweb="textarea"]:focus-within,
+[data-baseweb="select"]:focus-within > div {
+  border-color: #959595 !important;
+  box-shadow: 0 0 0 2px #1717170a;
+}
+
+input,
+textarea,
+[data-baseweb="select"] span,
+[data-baseweb="select"] input {
+  color: #171717 !important;
+  -webkit-text-fill-color: #171717;
+  font-size: 13px !important;
+  caret-color: #171717;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #858585 !important;
+  -webkit-text-fill-color: #858585;
+  opacity: 1;
+}
+
+input:disabled,
+textarea:disabled {
+  color: #8a8a8a !important;
+  -webkit-text-fill-color: #8a8a8a;
+  opacity: 1;
+}
+
+[data-baseweb="input"] button,
+[data-baseweb="input"] svg,
+[data-baseweb="select"] svg,
+[data-testid="stNumberInput"] button {
+  background: transparent;
+  color: #737373;
+  fill: currentColor;
+}
+
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[data-baseweb="popover"] li,
+[role="listbox"],
+[role="option"] {
+  background: #fff !important;
+  color: #171717 !important;
+}
+
+[role="option"][aria-selected="true"],
+[role="option"]:hover {
+  background: #f4f0ff !important;
+}
+
+[data-testid="stTooltipContent"] {
+  background: #fff;
+  color: #404040;
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  box-shadow: 0 4px 18px #0000000d;
+  font-size: 12px;
+}
+
+[data-testid="stTooltipErrorContent"] {
+  background: #fff5f5;
+  color: #a82b2b;
+}
+
+[data-testid="stTooltipIcon"],
+[data-testid="stTooltipIcon"] :is(span, svg) {
+  color: #858585;
+  fill: currentColor;
+}
+
+[data-testid="stTooltipIcon"]:hover,
+[data-testid="stTooltipIcon"]:hover :is(span, svg) {
+  color: #404040;
+}
+
+/* 主操作用黑色，次操作保留白底；禁用状态与键盘焦点仍清晰可辨。 */
+[data-testid="stButton"] button,
+[data-testid="stDownloadButton"] button,
+[data-testid="stLinkButton"] a,
+[data-testid="stFileUploader"] button,
+[data-testid="stPopover"] button {
+  background: #fff;
+  color: #333;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  min-height: 38px;
+  font-size: 13px;
+  box-shadow: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+[data-testid="stButton"] button:hover,
+[data-testid="stDownloadButton"] button:hover,
+[data-testid="stLinkButton"] a:hover,
+[data-testid="stFileUploader"] button:hover,
+[data-testid="stPopover"] button:hover {
+  background: #f8f8f8;
+  color: #171717;
+  border-color: #bdbdbd;
+  transform: none;
+}
+
+[data-testid="stButton"] button[kind="primary"],
+.st-key-studio_generate button,
+.st-key-save_config_btn button {
+  background: #171717;
+  color: #fff;
+  border-color: #171717;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+[data-testid="stButton"]
+  button[kind="primary"]
+  [data-testid="stMarkdownContainer"],
+.st-key-studio_generate button [data-testid="stMarkdownContainer"],
+.st-key-save_config_btn button [data-testid="stMarkdownContainer"] {
+  color: #fff;
+}
+
+[data-testid="stButton"] button[kind="primary"]:hover,
+.st-key-studio_generate button:hover,
+.st-key-save_config_btn button:hover {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+[data-testid="stButton"] button:disabled,
+[data-testid="stDownloadButton"] button:disabled,
+[data-testid="stFileUploader"] button:disabled {
+  background: #f4f4f4;
+  color: #8a8a8a;
+  border-color: #e7e7e7;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+[data-testid="stButton"] button:disabled [data-testid="stMarkdownContainer"] {
+  color: #8a8a8a;
+}
+
+[data-testid="stButton"] button:focus-visible,
+[data-baseweb="tab"]:focus-visible,
+[role="slider"]:focus-visible {
+  outline: 2px solid #8b79c6;
+  outline-offset: 3px;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+  gap: 24px;
+  border-color: #e7e7e7;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"],
+[data-testid="stTabs"] [data-baseweb="tab"] p {
+  color: #737373;
+  font-size: 13px;
+  background: transparent;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"],
+[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] p {
+  color: #171717 !important;
+  font-weight: 600;
+}
+
+[data-baseweb="tab-highlight"] {
+  background: #171717;
+}
+
+[data-baseweb="tab-border"] {
+  background: #e7e7e7;
+}
+
+[data-testid="stExpander"],
+[data-testid="stExpander"] details {
+  background: #fff;
+  border-color: #e7e7e7;
+  border-radius: 8px;
+  color: #333;
+}
+
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary:hover {
+  color: #333;
+}
+
+/* 根据 Streamlit 语义 test-id 分色，错误、警告、成功不会被统一成绿色。 */
+[data-testid="stAlertContainer"] {
+  border-radius: 8px;
+}
+
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentInfo"]) {
+  background: #f6f7fb;
+  border: 1px solid #e5e8f0;
+  color: #48576f;
+}
+
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]) {
+  background: #fffaf0;
+  border: 1px solid #f0e2bb;
+  color: #856017;
+}
+
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentError"]) {
+  background: #fff5f5;
+  border: 1px solid #f2d6d6;
+  color: #a82b2b;
+}
+
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentSuccess"]) {
+  background: #f3faf6;
+  border: 1px solid #dcebe2;
+  color: #35674b;
+}
+
+[data-testid="stAlertContainer"] [data-testid="stMarkdownContainer"],
+[data-testid="stAlertContainer"] [data-testid="stMarkdownContainer"] p {
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+[data-testid="stFileUploaderDropzone"] {
+  background: #fafafa;
+  border: 1px dashed #d4d4d4;
+  border-radius: 8px;
+}
+
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] p,
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderFileName"] {
+  color: #737373 !important;
+  font-size: 12px;
+}
+
+[data-testid="stFileUploaderDropzone"] svg {
+  color: #737373;
+  fill: currentColor;
+}
+
+[data-testid="stRadio"] label,
+[data-testid="stCheckbox"] label,
+[data-testid="stRadio"] p,
+[data-testid="stCheckbox"] p,
+[data-testid="stSlider"] {
+  color: #333;
+}
+
+/* 选中态只改原生标记的外观，保留 input 与 label 的点击/键盘行为。 */
+[data-baseweb="radio"] > div:first-child {
+  background: #fff;
+  border: 1px solid #bdbdbd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-baseweb="radio"]:has(input:checked) > div:first-child {
+  border-color: #171717;
+}
+
+[data-baseweb="radio"] > div:first-child > div {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+[data-baseweb="radio"]:has(input:checked) > div:first-child > div {
+  background: #171717;
+}
+
+[data-baseweb="checkbox"] > span:first-child {
+  background-color: #fff;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+}
+
+[data-baseweb="checkbox"]:not(:has(input:checked)) > span:first-child {
+  background-image: none;
+}
+
+[data-baseweb="checkbox"]:has(input:checked) > span:first-child {
+  background-color: #171717;
+  border-color: #171717;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8 3 3 6-6' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 13px 13px;
+}
+
+[data-baseweb="checkbox"]:has(input[aria-checked="mixed"]) > span:first-child {
+  background-color: #171717;
+  border-color: #171717;
+  background-image: linear-gradient(#fff, #fff);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 8px 2px;
+}
+
+[data-baseweb="radio"]:has(input:disabled) > div:first-child,
+[data-baseweb="checkbox"]:has(input:disabled) > span:first-child {
+  opacity: 0.5;
+}
+
+[data-baseweb="slider"] [role="slider"] {
+  background: #171717;
+  border-color: #171717;
+  color: #171717;
+}
+
+/* 轨道的渐变停点由真实滑块值生成，只变换色彩，保留动态填充比例。 */
+[data-baseweb="slider"] div[style*="height: 0.25rem"] {
+  filter: grayscale(1) invert(1);
+}
+
+/* 手柄与数值位于轨道内部，反向变换抵消父级反色，仍显示黑色手柄。 */
+[data-baseweb="slider"] div[style*="height: 0.25rem"] > * {
+  filter: invert(1);
+}
+
+[data-testid="stSlider"] p,
+[data-testid="stSlider"] [data-testid*="TickBar"],
+[data-testid="stSlider"] [data-testid*="ThumbValue"] {
+  color: #737373;
+}
+
+[data-testid="stProgress"] > div > div {
+  background: #ededed;
+}
+
+[data-testid="stProgress"] > div > div > div {
+  background: #171717;
+}
+
+/* 旧流程预览区沿用原组件，背景仅降为中性色，不添加伪造画面。 */
+.studio-monitor,
+.studio-overview,
+.studio-overview-item,
+.monitor-topbar,
+.monitor-footer {
+  background: #fff;
+  border-color: #e7e7e7;
+  color: #737373;
+}
+
+.monitor-canvas {
+  background: #fafafa;
+}
+
+.monitor-empty,
+.monitor-empty h3,
+.monitor-empty strong,
+.studio-overview-item strong {
+  color: #404040;
+}
+
+.monitor-empty p {
+  color: #737373;
+}
+
+.monitor-empty svg {
+  color: #a3a3a3;
+}
+
+/* 工作台可用宽度不足时，三列降为两列；更窄时自然降成一列。 */
+@media (max-width: 1100px) {
+  [data-testid="stHorizontalBlock"] {
+    flex-wrap: wrap !important;
+  }
+
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    min-width: min(100%, 290px) !important;
+    flex: 1 1 290px !important;
+    width: auto !important;
+  }
+
+  .st-key-studio-editor,
+  .st-key-studio-preview {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  [data-testid="stMainBlockContainer"] {
+    padding: 0.8rem 0.1rem 1.5rem;
+  }
+
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    min-width: 0 !important;
+    flex-basis: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

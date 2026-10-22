@@ -1,0 +1,26 @@
+{
+  "name": "frameweave-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "镜织 FrameWeave AI 视频创作工作台",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "format": "prettier --write src index.html vite.config.ts tsconfig.json package.json",
+    "format:check": "prettier --check src index.html vite.config.ts tsconfig.json package.json"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}
